@@ -42,7 +42,7 @@ async function run() {
 
             const options = {
                 // Include only the `title` and `imdb` fields in the returned document
-                projection: { title: 1, price: 1, service_id: 1 },
+                projection: { title: 1, price: 1, service_id: 1, img: 1, date: 1 },
             };
 
 
@@ -51,8 +51,22 @@ async function run() {
         })
 
         //bookings
+
+        app.get('/bookings', async (req, res) => {
+            console.log(req.query.email);
+            let query = {};
+            if (req.query?.email) {
+                query = { email: req.query.email }
+            }
+            const result = await bookingCollection.find(query).toArray();
+            res.send(result);
+        })
+
         app.post('/bookings', async (req, res) => {
             const booking = req.body;
+            console.log(booking);
+            const result = await bookingCollection.insertOne(booking);
+            res.send(result);
         });
 
         // Send a ping to confirm a successful connection
@@ -79,7 +93,7 @@ app.get('/', (req, res) => {
             }
 
             .container {
-                margin: 100px auto;
+                margin: 50px;
                 padding: 100px;
                 background-color: #ffffff;
                 border-radius: 10px;
@@ -112,6 +126,7 @@ app.get('/', (req, res) => {
         <div class="container">
             <h1>Car Doctor Server Is Running...</h1>
             <p><a class="button-link" href="/services">Go to services page</a></p>
+            <p><a class="button-link" href="/bookings">Go to bookings page</a></p>
         </div>
     </body>
     </html>`)
